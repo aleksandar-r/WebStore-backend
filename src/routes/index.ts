@@ -1,5 +1,4 @@
 export { default as rootRoute } from './root'
-export { default as authRoute } from './authRoutes'
 export { default as userRoute } from './userRoutes'
 export { default as orderRoute } from './orderRoutes'
 export { default as uploadRoute } from './uploadRoutes'

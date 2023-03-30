@@ -23,7 +23,7 @@ export const getUser = async (id: string) => {
   return user
 }
 
-export const createTokens = (user: IUser) => {
+export const createTokens = (user: IUser)  => {
   const accessToken = jwt.sign(
     {
       UserInfo: {

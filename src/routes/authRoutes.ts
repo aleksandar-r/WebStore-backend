@@ -28,7 +28,7 @@ export class AuthEnticationRoute {
     this.authenticationRoute.post('/register', async (req: Request, res: Response) => {
       const { username, password, email, roles } = req.body
       const { accessToken, refreshToken } = await this.authService.register(username, password, email, roles)
-
+      console.log(accessToken);
       res.cookie('jwt', refreshToken, cookieOptions)
       res.status(status.created).json({ accessToken })
     })

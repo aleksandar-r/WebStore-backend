@@ -11,7 +11,10 @@ import corsOptions from './config/corsOptions'
 import connectDB from './config/dbConnect'
 import mongoose from 'mongoose'
 import { text, status } from './config/common'
-import { rootRoute, authRoute, userRoute, orderRoute, uploadRoute, productRoute } from './routes'
+import { rootRoute, userRoute, orderRoute, uploadRoute, productRoute } from './routes'
+import { AuthEnticationRoute } from './routes/authRoutes'
+import AuthenticationService from './services/auth.service'
+import CryptUtil from './utils/crypt.util'
 
 const PORT = process.env.PORT || 3500
 const app = express()
@@ -30,8 +33,12 @@ app.use(cookieParser())
 
 app.use('/', express.static(path.join(__dirname, '/public')))
 
+const cryptService = new CryptUtil();
+const authService = new AuthenticationService(cryptService)
+const authRoute = new AuthEnticationRoute(authService);
+
 app.use('/', rootRoute)
-app.use('/auth', authRoute)
+app.use('/auth', authRoute.authenticationRoute)
 app.use('/user', userRoute)
 app.use('/order', orderRoute)
 app.use('/upload', uploadRoute)

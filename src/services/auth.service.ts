@@ -5,14 +5,13 @@ import { IAuthenticationService, IUser } from '../types/auth'
 import UserRepository from '../repository/user.repository'
 import { createTokens } from '../utils/helperFns'
 import { auth, text } from '../config/common'
-import CryptService from './crypt.service'
-import UserModel from '../models/userModel'
+import { ICryptUtil } from '../types/crypt'
 
-const cryptService = new CryptService()
 const userRepository = new UserRepository()
 
 class AuthenticationService implements IAuthenticationService {
-  constructor() {}
+  
+  constructor(private cryptService: ICryptUtil) {}
 
   // @desc Register
   // @route POST /auth/register
@@ -27,7 +26,7 @@ class AuthenticationService implements IAuthenticationService {
     if (duplicateEmail) {
       throw new Error(text.res.emailExists)
     }
-    const hashedPwd = await cryptService.hashValue(password)
+    const hashedPwd = await this.cryptService.hashValue(password)
 
     const isRolesInBody = !Array.isArray(roles) || !roles.length
     const userObject: IUser = isRolesInBody
@@ -83,7 +82,7 @@ class AuthenticationService implements IAuthenticationService {
           throw new Error(text.res.forbidden)
         }
 
-        const foundUser = await UserModel.findOne({ username: decoded.username })
+        const foundUser = await userRepository.getByUserName(decoded.username)
 
         const newAccessToken = jwt.sign(
           {

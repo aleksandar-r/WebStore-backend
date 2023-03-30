@@ -1,9 +1,8 @@
 import { IUserReq } from './../types/user.d'
 import { Types } from 'mongoose'
-import { text } from '../common'
+import { text } from '../config/common'
 import ProductRepository from '../repository/product.repository'
-import { IKeyword, IProduct, IProductService } from '../types/product'
-import { calculateReviewRating } from '../utils/helperFns'
+import { IProduct, IProductService } from '../types/product'
 
 const productRepository = new ProductRepository()
 
@@ -116,7 +115,8 @@ class ProductService implements IProductService {
   // @desc   Create a new review
   // @route  POST /products/review
   // @access Private
-  async createNewReview(productId: string, rating: number, comment: string, user: IUserReq) {
+  async createNewReview(baseObject: { productId: string; rating: number; comment: string }, user: IUserReq) {
+    const { productId, rating, comment } = baseObject
     const isBodyComplete = [productId, rating.toString(), comment].every(Boolean)
 
     if (!isBodyComplete) {

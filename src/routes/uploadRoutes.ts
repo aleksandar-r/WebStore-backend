@@ -1,11 +1,16 @@
-import { Router } from 'express'
-import { uploadSingleImage } from '../controllers/uploadController'
+import { Request, Response, Router } from 'express'
 import upload from '../middleware/uploadImage'
+import { IFile } from '../types/upload'
 
-const router = Router()
+const uploadRoute = Router()
 
-router.post('/', upload.single('image'), uploadSingleImage)
+uploadRoute.post('/', upload.single('image'), async (req: Request, res: Response) => {
+  res.send(`/${req?.file?.path}`)
+})
 
-router.post('/multiple', upload.array('images', 12))
+uploadRoute.post('/multiple', upload.array('images', 12), async (req: Request, res: Response) => {
+  const response = (req?.files as IFile[]).map((img: IFile) => img.path)
+  res.send(response)
+})
 
-export default router
+export default uploadRoute

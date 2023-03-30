@@ -1,16 +1,55 @@
-import { register } from './../controllers/authController'
-import { Router } from 'express'
-import { login, refresh, logout } from '../controllers/authController'
+import { Request, Response, Router } from 'express'
+import AuthenticationService from '../services/auth.service'
 import loginLimiter from '../middleware/loginLimiter'
+import { text, status } from '../config/common'
+import cookieOptions from '../config/cookieOptions'
 
-const router = Router()
+const authenticationRoute = Router()
+const authService = new AuthenticationService()
 
-router.route('/').post(loginLimiter, login)
+// Login
+authenticationRoute.post('/', loginLimiter, async (req: Request, res: Response) => {
+  const { username, password } = req.body
 
-router.route('/register').post(register)
+  const { accessToken, refreshToken } = await authService.login(username, password)
 
-router.route('/refresh').get(refresh)
+  // Create secure cookie with refresh token
+  res.cookie('jwt', refreshToken, cookieOptions)
 
-router.route('/logout').post(logout)
+  res.json({ accessToken })
+})
 
-export default router
+// Register
+authenticationRoute.post('/register', async (req: Request, res: Response) => {
+  const { username, password, email, roles } = req.body
+  const { accessToken, refreshToken } = await authService.register(username, password, email, roles)
+
+  res.cookie('jwt', refreshToken, cookieOptions)
+  res.status(status.created).json({ accessToken })
+})
+
+// Logout
+authenticationRoute.post('/logout', async (req: Request, res: Response) => {
+  const cookies = req.cookies
+
+  if (!cookies?.jwt) return res.sendStatus(status.noContent)
+
+  const { httpOnly, sameSite, secure } = cookieOptions
+  res.clearCookie('jwt', { httpOnly, sameSite, secure })
+
+  res.status(status.OK).json({ message: text.res.cookieCleared })
+})
+
+// Refresh
+authenticationRoute.get('/refresh', async (req: Request, res: Response) => {
+  const cookies = req.cookies
+
+  if (!cookies?.jwt) {
+    return res.status(status.unauthorized).json({ message: text.res.unauthorized })
+  }
+
+  const accessToken = authService.refresh(cookies.jwt)
+  res.json({ accessToken })
+})
+
+export default authenticationRoute

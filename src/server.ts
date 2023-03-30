@@ -10,18 +10,8 @@ import cors from 'cors'
 import corsOptions from './config/corsOptions'
 import connectDB from './config/dbConnect'
 import mongoose from 'mongoose'
-import text from './common/text'
-import status from './common/status'
-
-import rootRoutes from './routes/root'
-import authRoutes from './routes/authRoutes'
-import orderRoutes from './routes/orderRoutes'
-import ordersRoutes from './routes/ordersRoutes'
-import productRoutes from './routes/productRoutes'
-import productsRoutes from './routes/productsRoutes'
-import uploadRoutes from './routes/uploadRoutes'
-import userProfileRoutes from './routes/userProfileRoutes'
-import userRoutes from './routes/userRoutes'
+import { text, status } from './config/common'
+import { rootRoute, authRoute, userRoute, orderRoute, uploadRoute, productRoute } from './routes'
 
 const PORT = process.env.PORT || 3500
 const app = express()
@@ -35,22 +25,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(cors(corsOptions))
-
 app.use(express.json())
-
 app.use(cookieParser())
 
 app.use('/', express.static(path.join(__dirname, '/public')))
 
-app.use('/', rootRoutes)
-app.use('/auth', authRoutes)
-app.use('/order', orderRoutes)
-app.use('/orders', ordersRoutes)
-app.use('/product', productRoutes)
-app.use('/products', productsRoutes)
-app.use('/upload', uploadRoutes)
-app.use('/user/profile', userProfileRoutes)
-app.use('/user', userRoutes)
+app.use('/', rootRoute)
+app.use('/auth', authRoute)
+app.use('/user', userRoute)
+app.use('/order', orderRoute)
+app.use('/upload', uploadRoute)
+app.use('/product', productRoute)
 
 // WIP Introducing paypal as payment form
 // TODO app.get('/api/config/paypal', (req, res) => res.send(process.env.PAYPAL_CLIENT_ID))

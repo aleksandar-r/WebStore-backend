@@ -1,6 +1,6 @@
 import multer from 'multer'
 import path from 'path'
-import { File } from '../types/upload'
+import { IFile } from '../types/upload'
 
 // creates storage object
 const storage = multer.diskStorage({
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 })
 
 // checks for valid file type
-function checkFileType(file: File, callback: multer.FileFilterCallback) {
+function checkFileType(file: IFile, callback: multer.FileFilterCallback) {
   // Checks for allowed types
   const filetypes = /jpg|jpeg|png/
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase())

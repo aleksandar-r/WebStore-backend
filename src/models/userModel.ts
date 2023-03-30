@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { EModels } from './modelRefs'
-import auth from '../common/auth'
+import auth from '../config/common/auth'
 
 const userSchema = new mongoose.Schema({
   username: {

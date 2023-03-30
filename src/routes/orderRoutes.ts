@@ -1,16 +1,56 @@
-import { Router } from 'express'
-import verifyJWT from '../middleware/verifyJWT'
-import { isAdmin } from '../middleware/authorize'
-import { getOrderById, updateOrderToDelivered, updateOrderToPaid } from '../controllers/orderController'
+import { IReqWithUser } from './../types/auth.d'
+import { Request, Response, Router } from 'express'
+import AuthenticationMiddleware from '../middleware/authenticate'
+import AuthorizationMiddleware from '../middleware/authorize'
+import OrderService from '../services/order.service'
 
-const router = Router()
+export const orderRoute = Router()
+const orderService = new OrderService()
+const authorize = new AuthorizationMiddleware()
+const authentication = new AuthenticationMiddleware()
 
-router.use(verifyJWT)
+orderRoute.use(authentication.verifyJWT)
 
-router.route('/').get(getOrderById)
+// getAllOrders
+orderRoute.get('/', authorize.isEditor, async (req: Request, res: Response) => {
+  const orders = await orderService.getAllOrders()
 
-router.route('/pay').put(isAdmin, updateOrderToPaid)
+  res.json(orders)
+})
 
-router.route('./deliver').put(updateOrderToDelivered)
+// getOrderByID
+orderRoute.get('/single', authorize.isAdmin, async (req: Request, res: Response) => {
+  const order = await orderService.getOrderById(req.body.id)
 
-export default router
+  res.json(order)
+})
+
+// getLoggedInUsersOrders
+orderRoute.get('/myorders', async (req: IReqWithUser, res: Response) => {
+  const usersOrders = await orderService.getLoggedInUserOrders(req.user.id)
+
+  res.json(usersOrders)
+})
+
+// createNewOrder
+orderRoute.post('/', async (req: IReqWithUser, res: Response) => {
+  const order = await orderService.createNewOrder(req.user.id, req.body)
+
+  res.json(order)
+})
+
+// updateOrderToPaid
+orderRoute.put('/pay', async (req: IReqWithUser, res: Response) => {
+  const orderPaid = await orderService.updateOrderToPaid(req.body)
+
+  res.json(orderPaid)
+})
+
+// updateOrderToDelivered
+orderRoute.put('/deliver', async (req: IReqWithUser, res: Response) => {
+  const orderDelivered = orderService.updateOrderToDelivered(req.user.id)
+
+  res.json(orderDelivered)
+})
+
+export default orderRoute

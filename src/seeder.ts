@@ -3,7 +3,7 @@ import Product from './models/productModel'
 import products from './data/products'
 
 mongoose
-  .connect('mongodb+srv://lexa:test1234@testproject.invdxa9.mongodb.net/web-store?retryWrites=true&w=majority')
+  .connect(process.env.DATABASE_URI as string)
   .then(() => {
     console.log('Connected to MongoDB')
   })

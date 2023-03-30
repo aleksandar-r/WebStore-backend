@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import UserRepository from '../repository/user.repository'
 import { IUserService } from '../types/user'
-import { text } from '../common'
+import { text } from '../config/common'
 import { IUser } from '../types/auth'
 
 const userRepository = new UserRepository()

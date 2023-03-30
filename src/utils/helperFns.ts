@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken'
-import { User as FoundUser } from '../types/auth'
-import { ProductReview } from '../types/product'
+import { IUser } from '../types/auth'
+import { IProductReview } from '../types/product'
 import User from '../models/userModel'
-import auth from '../common/auth'
+import auth from '../config/common/auth'
 
-export const calculateReviewRating = (reviews: ProductReview[] | undefined) => {
+export const calculateReviewRating = (reviews: IProductReview[] | undefined) => {
   if (!reviews) return 0
 
-  const sumReviews = reviews.reduce((acc: number, item: ProductReview) => item.rating + acc, 0)
+  const sumReviews = reviews.reduce((acc: number, item: IProductReview) => item.rating + acc, 0)
   return sumReviews / reviews?.length
 }
 
@@ -23,7 +23,7 @@ export const getUser = async (id: string) => {
   return user
 }
 
-export const createTokens = (user: FoundUser) => {
+export const createTokens = (user: IUser) => {
   const accessToken = jwt.sign(
     {
       UserInfo: {

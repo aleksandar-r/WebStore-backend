@@ -22,6 +22,5 @@ export interface IUserService {
 
 export interface IUserReq {
   username: string
-  roles: string[]
   id: string
 }

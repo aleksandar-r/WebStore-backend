@@ -1,34 +1,18 @@
 import { NextFunction, Response } from 'express'
-import { ReqWithUser } from '../types/auth'
-import status from '../common/status'
-import text from '../common/text'
-import auth from '../common/auth'
+import { IReqWithUser } from '../types/auth'
+import status from '../config/common/status'
+import text from '../config/common/text'
+import auth from '../config/common/auth'
 
-export const isAdmin = (req: ReqWithUser, res: Response, next: NextFunction) => {
-  const checkRoles = req.roles?.includes(auth.role.admin)
+class AuthorizationMiddleware {
+  constructor() {}
 
-  if (!req.user || !checkRoles) {
-    return res.status(status.unauthorized).json({ message: text.res.unauthorized })
+  private _checkRoles(roles: string[], role: string) {
+    return roles?.includes(role)
   }
 
-  next()
-}
-
-export const isEditor = (req: ReqWithUser, res: Response, next: NextFunction) => {
-  const checkRoles = req.roles?.includes(auth.role.editor)
-
-  if (!req.user || !checkRoles) {
-    return res.status(status.unauthorized).json({ message: text.res.unauthorized })
-  }
-
-  next()
-}
-
-//* *** WIP ***
-//* For any role
-export const checkRole = (role: string) => {
-  return (req: ReqWithUser, res: Response, next: NextFunction) => {
-    const checkRoles = req.roles?.includes(role)
+  isAdmin(req: IReqWithUser, res: Response, next: NextFunction) {
+    const checkRoles = this._checkRoles(req.roles, auth.role.admin)
 
     if (!req.user || !checkRoles) {
       return res.status(status.unauthorized).json({ message: text.res.unauthorized })
@@ -36,4 +20,30 @@ export const checkRole = (role: string) => {
 
     next()
   }
+
+  isEditor(req: IReqWithUser, res: Response, next: NextFunction) {
+    const checkRoles = this._checkRoles(req.roles, auth.role.editor)
+
+    if (!req.user || !checkRoles) {
+      return res.status(status.unauthorized).json({ message: text.res.unauthorized })
+    }
+
+    next()
+  }
+
+  //* *** WIP ***
+  //* For any role
+  checkAuthRole(role: string) {
+    return (req: IReqWithUser, res: Response, next: NextFunction) => {
+      const checkRoles = this._checkRoles(req.roles, role)
+
+      if (!req.user || !checkRoles) {
+        return res.status(status.unauthorized).json({ message: text.res.unauthorized })
+      }
+
+      next()
+    }
+  }
 }
+
+export default AuthorizationMiddleware

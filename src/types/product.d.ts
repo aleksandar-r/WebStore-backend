@@ -56,5 +56,8 @@ export interface IProductService {
   createNewProduct: (baseObject: IProduct) => Promise<IProduct>
   updateProduct: (updateObject: Partial<IProduct>) => Promise<IProduct>
   deleteProduct: (id: string) => Promise<string>
-  createNewReview: (productId: string, rating: number, comment: string, user: IUserReq) => Promise<string>
+  createNewReview: (
+    baseObject: { productId: string; rating: number; comment: string },
+    user: IUserReq,
+  ) => Promise<string>
 }

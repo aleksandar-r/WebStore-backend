@@ -1,6 +1,6 @@
 import OrderRepository from '../repository/order.repository'
 import { IOrder, IOrderService, IPaymentResult } from '../types/order'
-import { text } from '../common'
+import { text } from '../config/common'
 import { Types } from 'mongoose'
 
 const orderRepository = new OrderRepository()

@@ -4,7 +4,7 @@ import jwt, { VerifyErrors } from 'jsonwebtoken'
 import { IAuthenticationService, IUser } from '../types/auth'
 import UserRepository from '../repository/user.repository'
 import { createTokens } from '../utils/helperFns'
-import { auth, text } from '../common'
+import { auth, text } from '../config/common'
 import CryptService from './crypt.service'
 import UserModel from '../models/userModel'
 
